@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Script:      301challenge class05
+# Author:      Julian Pena
+# Date:        03/29/2024
+# Purpose:     class05
+
+#!/bin/bash
+
+LOG_FILES=("/var/log/syslog" "/var/log/wtmp")
+BACKUP_DIR="backups"
+TIMESTAMP=$(date +"%m%d%y")
+
+mkdir -p "$BACKUP_DIR"
+
+for file in "${LOG_FILES[@]}"; do
+     FILE_SIZE=$(wc -c < "$file")
+     FILE_NAME=$(basename "$file")
+     zip -r "$BACKUP_DIR/$FILE_NAME-$TIMESTAMP.zip" "$file" > /dev/null
+     echo "Compressing $BACKUP_DIR/$FILE_NAME-$TIMESTAMP.zip"
+     COMPRESSED_FILE_SIZE=$(wc -c < "$BACKUP_DIR/$FILE_NAME-$TIMESTAMP.zip")
+     echo "File size before compression: $FILE_SIZE" 
+     echo "File size after compression: $COMPRESSED_FILE_SIZE"
+    if [[ $FILE_SIZE -gt $COMPRESSED_FILE_SIZE ]]; then
+        echo "Compression successful: compressed file size is smaller than original file size"
+     else
+        echo "Compression unsuccessful: compressed file size is not smaller than original file size"
+    fi
+    echo "-----------------------------------"
+done
